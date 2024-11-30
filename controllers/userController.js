@@ -1,17 +1,18 @@
-const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const sequelize = require('../config'); // Import sequelize instance
+const User = require('../models/user')(sequelize, require('sequelize').DataTypes); // Import and initialize User model
 
 exports.registerUser = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).send('Username and password are required');
+    return res.render('registration', { error: 'Username and password are required' });
   }
 
   try {
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
-      return res.status(400).send('Username already exists');
+      return res.render('registration', { error: 'Username already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -21,7 +22,7 @@ exports.registerUser = async (req, res) => {
     res.redirect('/products');
   } catch (error) {
     console.error('Error registering user:', error);
-    res.status(500).send('Internal Server Error');
+    res.render('registration', { error: 'Internal Server Error' });
   }
 };
 
@@ -29,23 +30,32 @@ exports.loginUser = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).send('Username and password are required');
+    return res.render('login', { error: 'Username and password are required' });
   }
 
   try {
     const user = await User.findOne({ where: { username } });
     if (!user) {
-      return res.status(400).send('Invalid username or password');
+      return res.render('login', { error: 'Invalid username or password' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).send('Invalid username or password');
+      return res.render('login', { error: 'Invalid username or password' });
     }
     
     res.redirect('/products');
   } catch (error) {
     console.error('Error logging in user:', error);
-    res.status(500).send('Internal Server Error');
+    res.render('login', { error: 'Internal Server Error' });
   }
+};
+
+exports.logoutUser = (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect('/');
+  });
 };

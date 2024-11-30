@@ -56,11 +56,11 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-    <div>
-      <a href="/users/login" class="text-button">Login</a>
-      <span>|</span>
-      <a href="/users/register" class="text-button">Register</a>
-    </div>
+      <div>
+        <a href="/users/login" class="text-button">Login</a>
+        <span>|</span>
+        <a href="/users/register" class="text-button">Register</a>
+      </div>
 
     </div>
   </header>
@@ -73,7 +73,10 @@
         <div class="row gy-4 justify-content-center">
           <div class="col-lg-6 d-flex flex-column justify-content-center">
             <h2>Register</h2>
-            <form method="post" action="/users/register">
+            <% if (typeof error !== 'undefined') { %>
+              <p style="color: red;"><%= error %></p>
+            <% } %>
+            <form method="post" action="/users/register" >
               <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required>

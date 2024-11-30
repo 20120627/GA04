@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Product Detail - Yummy Bootstrap Template</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Detail</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -35,7 +34,6 @@
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
 </head>
-
 <body class="starter-page-page">
 
   <header id="header" class="header d-flex align-items-center sticky-top">
@@ -58,22 +56,21 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-    <div>
-      <a href="/users/login" class="text-button">Login</a>
-      <span>|</span>
-      <a href="/users/register" class="text-button">Register</a>
-    </div>
+      <div>
+        <a href="/users/login" class="text-button">Login</a>
+        <span>|</span>
+        <a href="/users/register" class="text-button">Register</a>
+      </div>
 
     </div>
   </header>
 
   <main class="main">
 
-    
     <section id="Detail" class="menu section">
       <div class="container">
         <div class="container section-title" data-aos="fade-up">   
-          <p><span class="description-title"><%= product.name %></span></p>
+          <h1><%= product.name %></h1>
         </div>
         <div class="row gy-4 justify-content-center justify-content-lg-between">
           <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">     
@@ -85,6 +82,27 @@
           <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
             <img src="/assets/img/menu/<%= product.image %>" class="img-fluid animated" alt="<%= product.name %>">
           </div>
+        </div>
+      </div>
+    </section>
+
+    // Other Products
+    <section id="other-products" class="menu section">
+      <div class="container">
+        <div class="container section-title" data-aos="fade-up">
+          <h2>Other Products</h2>
+        </div>
+        <div class="row gy-4 justify-content-center justify-content-lg-between">
+          <% otherProducts.slice(0, 5).forEach(otherProduct => { %>
+            <div class="col-lg-2 d-flex flex-column justify-content-center text-center">
+              <img src="/assets/img/menu/<%= otherProduct.image %>" class="img-fluid" alt="<%= otherProduct.name %>" style="max-width: 100px;">
+              <h3><%= otherProduct.name %></h3>
+              <p><%= otherProduct.description %></p>
+              <p>Price: $<%= otherProduct.price %></p>
+              <p>Difficulty: <%= otherProduct.difficulty %></p>
+              <a class="btn btn-primary" href="/products/<%= otherProduct.id %>">View Details</a>
+            </div>
+          <% }) %>
         </div>
       </div>
     </section>
@@ -123,5 +141,4 @@
   <script src="/assets/js/main.js"></script>
 
 </body>
-
 </html>

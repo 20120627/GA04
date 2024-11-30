@@ -58,11 +58,11 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-    <div>
-      <a href="/users/login" class="text-button">Login</a>
-      <span>|</span>
-      <a href="/users/register" class="text-button">Register</a>
-    </div>
+      <div>
+        <a href="/users/login" class="text-button">Login</a>
+        <span>|</span>
+        <a href="/users/register" class="text-button">Register</a>
+      </div>
 
     </div>
   </header>
@@ -79,6 +79,20 @@
         </div>
   
         <div class="container">
+
+          <form action="/products/search" method="get">
+            <input type="text" name="name" placeholder="Search by name">
+            <input type="text" name="description" placeholder="Search by description">
+            <input type="number" name="minPrice" placeholder="Min price">
+            <input type="number" name="maxPrice" placeholder="Max price">
+            <select name="difficulty">
+              <option value="">Select difficulty</option>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+            <button type="submit">Search</button>
+          </form>
   
           <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
   
@@ -101,6 +115,17 @@
                   </div>
                 <% }) %>
               </div>
+
+              <!-- Existing code to display products -->
+              <% products.forEach(product => { %>
+                <div>
+                  <h2><%= product.name %></h2>
+                  <p><%= product.description %></p>
+                  <p>Price: <%= product.price %></p>
+                  <p>Difficulty: <%= product.difficulty %></p>
+                </div>
+              <% }) %>
+
             </div>
           </div>   
         </div>
