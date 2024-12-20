@@ -5,14 +5,21 @@ const LocalStrategy = require('passport-local').Strategy;
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const { User } = require('./models');
+const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 
 // Middleware
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.static('public'));
-app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Set to true if using HTTPS
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -49,8 +56,11 @@ passport.deserializeUser(async (id, done) => {
 });
 
 // Routes
-app.use('/products', require('./routes/productRoutes'));
+app.use('/products', productRoutes);
 app.use('/users', require('./routes/userRoutes'));
+
+// Define the cart route
+app.use('/cart', productRoutes);
 
 app.get('/', (req, res) => {
   res.render('home');

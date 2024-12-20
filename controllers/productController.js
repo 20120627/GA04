@@ -4,8 +4,37 @@ const Product = require('../models/product')(sequelize, require('sequelize').Dat
 
 exports.getProductList = async (req, res) => {
   try {
-    const products = await Product.findAll();
-    res.render('productList', { products });
+    const { name, description, minPrice, maxPrice, difficulty, page = 1, limit = 4 } = req.query;
+    const whereClause = {};
+
+    if (name) {
+      whereClause.name = { [Op.iLike]: `%${name}%` };
+    }
+    if (description) {
+      whereClause.description = { [Op.iLike]: `%${description}%` };
+    }
+    if (minPrice) {
+      whereClause.price = { [Op.gte]: minPrice };
+    }
+    if (maxPrice) {
+      whereClause.price = { [Op.lte]: maxPrice };
+    }
+    if (difficulty) {
+      whereClause.difficulty = difficulty;
+    }
+
+    const offset = (page - 1) * limit;
+    const products = await Product.findAndCountAll({
+      where: whereClause,
+      limit,
+      offset
+    });
+
+    res.render('productList', {
+      products: products.rows,
+      totalPages: Math.ceil(products.count / limit),
+      currentPage: parseInt(page)
+    });
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).send('Internal Server Error');
@@ -59,5 +88,54 @@ exports.searchProducts = async (req, res) => {
   } catch (error) {
     console.error('Error searching products:', error);
     res.status(500).send('Internal Server Error');
+  }
+};
+
+exports.getProductListJSON = async (req, res) => {
+  try {
+    const products = await Product.findAll();
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.getFilteredProductsJSON = async (req, res) => {
+  try {
+    const { name, description, minPrice, maxPrice, difficulty, page = 1, limit = 4 } = req.query;
+    const whereClause = {};
+
+    if (name) {
+      whereClause.name = { [Op.iLike]: `%{name}%` };
+    }
+    if (description) {
+      whereClause.description = { [Op.iLike]: `%{description}%` };
+    }
+    if (minPrice) {
+      whereClause.price = { [Op.gte]: minPrice };
+    }
+    if (maxPrice) {
+      whereClause.price = { [Op.lte]: maxPrice };
+    }
+    if (difficulty) {
+      whereClause.difficulty = difficulty;
+    }
+
+    const offset = (page - 1) * limit;
+    const products = await Product.findAndCountAll({
+      where: whereClause,
+      limit,
+      offset
+    });
+
+    res.json({
+      products: products.rows,
+      totalPages: Math.ceil(products.count / limit),
+      currentPage: parseInt(page)
+    });
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };

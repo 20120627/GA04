@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Yummy Food</title>
+  <title>Starter Page - Yummy Bootstrap Template</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -64,27 +64,43 @@
         <span>|</span>
         <a href="/users/register" class="text-button">Register</a>
       </div>
+
     </div>
   </header>
 
   <main class="main">
 
-    <section id="hero" class="hero section light-background">
+    
+    <section id="menu" class="menu section">
 
-      <div class="container">
-        <div class="row gy-4 justify-content-center justify-content-lg-between">
-          <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
-            <h1 data-aos="fade-up">Welcome to<br>Yummy Food</h1>
-            <p data-aos="fade-up" data-aos-delay="100">Offer you the best ingredients for homemade recipes</p>
-            <p data-aos="fade-up" data-aos-delay="100">Fast delivery in 20 mins</p>           
-          </div>
-          <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-            <img src="/assets/img/hero-img.png" class="img-fluid animated" alt="">
-          </div>
+        
+        <div class="container section-title" data-aos="fade-up">
+      
+          <p><span>Check Out</span> <span class="description-title">Yummy Menu</span></p>
         </div>
-      </div>
-
-    </section>
+  
+        <div class="container">
+          <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
+            <div class="tab-pane fade active show" id="menu-starters">
+              <div class="row gy-5">        
+                <%= item.product.name %> - <%= item.quantity %> x $<%= item.product.price %>
+                <form action="/cart/update/<%= item.product.id %>" method="post">
+                  <input type="number" name="quantity" value="<%= item.quantity %>">
+                  <button type="submit">Update</button>
+                </form>
+                <form action="/cart/remove/<%= item.product.id %>" method="post">
+                  <button type="submit">Remove</button>
+                </form>
+              </div>
+              <h2>Total: $<%= totalPrice %></h2>
+              <form action="/checkout" method="post">
+                <button type="submit">Checkout</button>
+              </form>
+            </div>
+          </div>   
+        </div>
+  
+      </section>
 
   </main>
 
