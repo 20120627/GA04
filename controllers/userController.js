@@ -3,10 +3,10 @@ const sequelize = require('../config'); // Import sequelize instance
 const User = require('../models/user')(sequelize, require('sequelize').DataTypes); // Import and initialize User model
 
 exports.registerUser = async (req, res) => {
-  const { username, password } = req.body;
+  const { fullname, username, email, password, avatar } = req.body;
 
-  if (!username || !password) {
-    return res.render('registration', { error: 'Username and password are required' });
+  if (!fullname || !username || !email || !password) {
+    return res.render('registration', { error: 'All fields are required' });
   }
 
   try {
@@ -15,9 +15,14 @@ exports.registerUser = async (req, res) => {
       return res.render('registration', { error: 'Username already exists' });
     }
 
+    const existingEmail = await User.findOne({ where: { email } });
+    if (existingEmail) {
+      return res.render('registration', { error: 'Email already exists' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await User.create({ username, password: hashedPassword });
+    await User.create({ fullname, username, email, password: hashedPassword, avatar });
 
     res.redirect('/products');
   } catch (error) {

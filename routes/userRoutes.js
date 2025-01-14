@@ -32,4 +32,16 @@ router.get('/logout', (req, res) => {
 
 router.get('/logout', userController.logoutUser);
 
+router.get('/check-username', async (req, res) => {
+  const { username } = req.query;
+  const user = await User.findOne({ where: { username } });
+  res.json({ available: !user });
+});
+
+router.get('/check-email', async (req, res) => {
+  const { email } = req.query;
+  const user = await User.findOne({ where: { email } });
+  res.json({ available: !user });
+});
+
 module.exports = router;

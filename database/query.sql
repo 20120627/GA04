@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS public."productList";
+DROP TABLE IF EXISTS public."users";
 
 CREATE TABLE public."productList" (
     id SERIAL PRIMARY KEY,
@@ -16,3 +17,15 @@ INSERT INTO public."productList" (name, image, description, difficulty, price) V
 ('Product 4', 'menu-item-4.png', 'Description for product 4', 'Easy', 40.00),
 ('Product 5', 'menu-item-5.png', 'Description for product 5', 'Medium', 50.00),
 ('Product 6', 'menu-item-6.png', 'Description for product 6', 'Hard', 60.00);
+
+CREATE TABLE public."users" (
+    id SERIAL PRIMARY KEY,
+    fullname VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    avatar VARCHAR(255) DEFAULT '3541871.png',
+    isactive BOOLEAN DEFAULT TRUE, -- Set default to TRUE since activation is not needed
+    "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

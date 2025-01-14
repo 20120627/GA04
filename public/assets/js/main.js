@@ -173,4 +173,24 @@
   window.addEventListener('load', navmenuScrollspy);
   document.addEventListener('scroll', navmenuScrollspy);
 
+  /**
+   * AJAX checking for username/email availability
+   */
+  function checkAvailability(field, value, feedbackId) {
+    fetch(`/users/check-${field}?${field}=${value}`)
+      .then(response => response.json())
+      .then(data => {
+        const feedbackElement = document.getElementById(feedbackId);
+        if (data.available) {
+          feedbackElement.textContent = `${field.charAt(0).toUpperCase() + field.slice(1)} is available.`;
+          feedbackElement.classList.remove('is-invalid');
+          feedbackElement.classList.add('is-valid');
+        } else {
+          feedbackElement.textContent = `${field.charAt(0).toUpperCase() + field.slice(1)} is already taken.`;
+          feedbackElement.classList.remove('is-valid');
+          feedbackElement.classList.add('is-invalid');
+        }
+      });
+  }
+
 })();
