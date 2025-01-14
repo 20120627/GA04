@@ -73,7 +73,7 @@ app.use('/cart', cartRoutes); // Add this line
 app.use('/users', require('./routes/userRoutes'));
 
 app.get('/', (req, res) => {
-  res.render('home');
+  res.render('home',{ user: req.user });
 });
 
 function isAuthenticated(req, res, next) {
