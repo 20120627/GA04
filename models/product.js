@@ -1,4 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = require('../config'); // Adjust the path as necessary
 
 module.exports = (sequelize, DataTypes) => {
   const Product = sequelize.define('Product', {

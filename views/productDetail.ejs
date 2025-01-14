@@ -78,7 +78,13 @@
             <p class="product-description"><%= product.description %></p>
             <p class="product-price">Price: $<%= product.price %></p>
             <p class="product-difficulty">Difficulty Level: <%= product.difficulty %></p>
-            <a class="btn btn-danger" href="/">Add to cart</a>
+            <form action="/cart/add/<%= product.id %>" method="POST">
+              <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" class="form-control">
+              </div>
+              <button type="submit" class="btn btn-danger">Add to cart</button>
+            </form>
           </div>
           <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
             <img src="/assets/img/menu/<%= product.image %>" class="img-fluid animated" alt="<%= product.name %>">
@@ -87,7 +93,7 @@
       </div>
     </section>
 
-    // Other Products
+    <!-- Other Products -->
     <section id="other-products" class="menu section">
       <div class="container">
         <div class="container section-title" data-aos="fade-up">

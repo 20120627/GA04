@@ -1,10 +1,24 @@
 const { Op } = require('sequelize');
 const sequelize = require('../config'); // Import sequelize instance
 const Product = require('../models/product')(sequelize, require('sequelize').DataTypes); // Import and initialize Product model
+const multer = require('multer');
+const path = require('path');
+
+// Set up multer for file upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/assets/img/menu/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
 
 exports.getProductList = async (req, res) => {
   try {
-    const { name, description, minPrice, maxPrice, difficulty, page = 1, limit = 4 } = req.query;
+    const { name, description, minPrice, maxPrice, difficulty, page = 1, limit = 4, sort = 'asc' } = req.query;
     const whereClause = {};
 
     if (name) {
@@ -27,13 +41,15 @@ exports.getProductList = async (req, res) => {
     const products = await Product.findAndCountAll({
       where: whereClause,
       limit,
-      offset
+      offset,
+      order: [['price', sort]]
     });
 
     res.render('productList', {
       products: products.rows,
       totalPages: Math.ceil(products.count / limit),
-      currentPage: parseInt(page)
+      currentPage: parseInt(page),
+      sort
     });
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -139,3 +155,20 @@ exports.getFilteredProductsJSON = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+exports.addProduct = [
+  upload.single('image'),
+  async (req, res) => {
+    try {
+      const { name, description, difficulty, price } = req.body;
+      const image = req.file ? req.file.filename : null; // Save only the filename
+      await Product.create({ name, image, description, difficulty, price });
+      req.flash('success_msg', 'Product added successfully!');
+      res.redirect('/products');
+    } catch (error) {
+      console.error('Error adding product:', error);
+      req.flash('error_msg', 'Error adding product');
+      res.redirect('/products/add');
+    }
+  }
+];

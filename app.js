@@ -1,27 +1,39 @@
 const express = require('express');
 const session = require('express-session');
+const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const { User } = require('./models');
 const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes'); // Add this line
+const path = require('path');
 
 const app = express();
 
 // Middleware
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false } // Set to true if using HTTPS
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Set up flash messages
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  next();
+});
 
 // Passport configuration
 passport.use(new LocalStrategy(
@@ -57,10 +69,8 @@ passport.deserializeUser(async (id, done) => {
 
 // Routes
 app.use('/products', productRoutes);
+app.use('/cart', cartRoutes); // Add this line
 app.use('/users', require('./routes/userRoutes'));
-
-// Define the cart route
-app.use('/cart', productRoutes);
 
 app.get('/', (req, res) => {
   res.render('home');

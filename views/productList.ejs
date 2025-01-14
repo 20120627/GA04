@@ -4,9 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Starter Page - Yummy Bootstrap Template</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+  <title>Product List</title>
 
   <!-- Favicons -->
   <link href="/assets/img/favicon.png" rel="icon">
@@ -15,7 +13,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -88,28 +86,40 @@
             <option value="Medium">Medium</option>
             <option value="Hard">Hard</option>
           </select>
+          <select id="sort" name="sort" onchange="this.form.submit()">
+            <option value="asc" <%= sort === 'asc' ? 'selected' : '' %>>Ascending</option>
+            <option value="desc" <%= sort === 'desc' ? 'selected' : '' %>>Descending</option>
+          </select>
           <button type="submit">Search</button>
         </form>
-
         <div class="row gy-4" id="product-container">
           <% products.forEach(product => { %>
             <div class="col-lg-3 menu-item">
-              <a href="/assets/img/menu/<%= product.image %>" class="glightbox"><img src="/assets/img/menu/<%= product.image %>" class="menu-img img-fluid" alt=""></a>
+              <a href="/assets/img/menu/<%= product.image %>" class="glightbox">
+                <img src="/assets/img/menu/<%= product.image %>" class="menu-img img-fluid fixed-size" alt="<%= product.name %>">
+              </a>
               <h4 style="color: red;"><%= product.name %></h4>
-              <p class="ingredients">
-                <%= product.difficulty %>
-              </p>
+              <p class="ingredients"><%= product.difficulty %></p>
               <a class="btn btn-danger" href="/products/<%= product.id %>"> $<%= product.price %></a>
             </div>
           <% }) %>
         </div>
 
         <!-- Pagination -->
-        <div id="pagination">
-          <button id="prev-page">Previous</button>
-          <span id="page-info" data-page="1" data-total-pages="1">Page 1 of 1</span>
-          <button id="next-page">Next</button>
-        </div>
+        <% if (totalPages > 1) { %>
+          <div id="pagination">
+            <% if (currentPage > 1) { %>
+              <a href="?page=<%= currentPage - 1 %>&sort=<%= sort %>" class="btn btn-secondary">Previous</a>
+            <% } %>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <a href="?page=<%= i %>&sort=<%= sort %>" class="btn <%= currentPage === i ? 'btn-primary' : 'btn-secondary' %>"><%= i %></a>
+            <% } %>
+            <% if (currentPage < totalPages) { %>
+              <a href="?page=<%= currentPage + 1 %>&sort=<%= sort %>" class="btn btn-secondary">Next</a>
+            <% } %>
+            <a href="/products/add" class="btn btn-primary">Add New Product</a>
+          </div>
+        <% } %>
       </div>
     </section>
   </main>
@@ -186,7 +196,7 @@
           data.products.forEach(product => {
             productContainer.innerHTML += `
               <div class="col-lg-3 menu-item">
-                <a href="/assets/img/menu/${product.image}" class="glightbox"><img src="/assets/img/menu/${product.image}" class="menu-img img-fluid" alt=""></a>
+                <a href="/assets/img/menu/${product.image}" class="glightbox"><img src="/assets/img/menu/${product.image}" class="menu-img img-fluid fixed-size" alt="${product.name}"></a>
                 <h4 style="color: red;">${product.name}</h4>
                 <p class="ingredients">${product.difficulty}</p>
                 <a class="btn btn-danger" href="/products/${product.id}"> $${product.price}</a>
