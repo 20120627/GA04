@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const { User } = require('./models');
 const productRoutes = require('./routes/productRoutes');
-const cartRoutes = require('./routes/cartRoutes'); // Add this line
+const cartRoutes = require('./routes/cartRoutes'); // Ensure this line is present
 const path = require('path');
 
 const app = express();
@@ -69,11 +69,11 @@ passport.deserializeUser(async (id, done) => {
 
 // Routes
 app.use('/products', productRoutes);
-app.use('/cart', cartRoutes); // Add this line
+app.use('/cart', cartRoutes); // Ensure this line is present
 app.use('/users', require('./routes/userRoutes'));
 
 app.get('/', (req, res) => {
-  res.render('home',{ user: req.user });
+  res.render('home', { user: req.user });
 });
 
 function isAuthenticated(req, res, next) {

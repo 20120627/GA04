@@ -60,6 +60,11 @@
           <a href="/users/login" class="text-button">Login</a>
           <span>|</span>
           <a href="/users/register" class="text-button">Register</a>
+          <% if (typeof user !== 'undefined') { %>
+            <a href="/users/info">
+              <img src="<%= user.avatar ? user.avatar : '/assets/img/apple-touch-icon.png' %>" alt="User Info" class="img-fluid animated fixed-size-avatar">
+            </a>
+          <% } %>
         </div>
   
       </div>

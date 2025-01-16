@@ -61,6 +61,11 @@
         <a href="/users/login" class="text-button">Login</a>
         <span>|</span>
         <a href="/users/register" class="text-button">Register</a>
+        <% if (typeof user !== 'undefined') { %>
+          <a href="/users/info">
+            <img src="<%= user.avatar ? user.avatar : '/assets/img/apple-touch-icon.png' %>" alt="User Info" class="img-fluid animated fixed-size-avatar">
+          </a>
+        <% } %>
       </div>
 
     </div>
@@ -75,12 +80,12 @@
       </div>
       <div class="container">
         <!-- Search and Filter Form -->
-        <form id="search-form">
-          <input type="text" id="search-name" placeholder="Search by name">
-          <input type="text" id="search-description" placeholder="Search by description">
-          <input type="number" id="min-price" placeholder="Min price">
-          <input type="number" id="max-price" placeholder="Max price">
-          <select id="difficulty">
+        <form id="search-form" action="/products/search" method="GET" class="search-form">
+          <input type="text" id="search-name" name="name" placeholder="Search by name">
+          <input type="text" id="search-description" name="description" placeholder="Search by description">
+          <input type="number" id="min-price" name="minPrice" placeholder="Min price">
+          <input type="number" id="max-price" name="maxPrice" placeholder="Max price">
+          <select id="difficulty" name="difficulty">
             <option value="">All</option>
             <option value="Easy">Easy</option>
             <option value="Medium">Medium</option>
@@ -156,63 +161,75 @@
   <script src="/assets/js/main.js"></script>
 
   <script>
-    document.getElementById('search-form').addEventListener('submit', function(e) {
-      e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchForm = document.getElementById('search-form');
+      const prevPageBtn = document.getElementById('prev-page');
+      const nextPageBtn = document.getElementById('next-page');
+
+      if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          fetchProducts();
+        });
+      }
+
+      if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', function() {
+          const currentPage = parseInt(document.getElementById('page-info').dataset.page);
+          if (currentPage > 1) {
+            fetchProducts(currentPage - 1);
+          }
+        });
+      }
+
+      if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', function() {
+          const currentPage = parseInt(document.getElementById('page-info').dataset.page);
+          const totalPages = parseInt(document.getElementById('page-info').dataset.totalPages);
+          if (currentPage < totalPages) {
+            fetchProducts(currentPage + 1);
+          }
+        });
+      }
+
+      function fetchProducts(page = 1) {
+        const name = document.getElementById('search-name').value;
+        const description = document.getElementById('search-description').value;
+        const minPrice = document.getElementById('min-price').value;
+        const maxPrice = document.getElementById('max-price').value;
+        const difficulty = document.getElementById('difficulty').value;
+
+        fetch(`/products/api/products/filter?name=${name}&description=${description}&minPrice=${minPrice}&maxPrice=${maxPrice}&difficulty=${difficulty}&page=${page}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            const productContainer = document.getElementById('product-container');
+            productContainer.innerHTML = '';
+            data.products.forEach(product => {
+              productContainer.innerHTML += `
+                <div class="col-lg-3 menu-item">
+                  <a href="/assets/img/menu/${product.image}" class="glightbox"><img src="/assets/img/menu/${product.image}" class="menu-img img-fluid fixed-size" alt="${product.name}"></a>
+                  <h4 style="color: red;">${product.name}</h4>
+                  <p class="ingredients">${product.difficulty}</p>
+                  <a class="btn btn-danger" href="/products/${product.id}"> $${product.price}</a>
+                </div>
+              `;
+            });
+
+            document.getElementById('page-info').innerText = `Page ${data.currentPage} of ${data.totalPages}`;
+            document.getElementById('page-info').dataset.page = data.currentPage;
+            document.getElementById('page-info').dataset.totalPages = data.totalPages;
+          })
+          .catch(error => console.error('Error fetching products:', error));
+      }
+
+      // Initial fetch
       fetchProducts();
     });
-
-    document.getElementById('prev-page').addEventListener('click', function() {
-      const currentPage = parseInt(document.getElementById('page-info').dataset.page);
-      if (currentPage > 1) {
-        fetchProducts(currentPage - 1);
-      }
-    });
-
-    document.getElementById('next-page').addEventListener('click', function() {
-      const currentPage = parseInt(document.getElementById('page-info').dataset.page);
-      const totalPages = parseInt(document.getElementById('page-info').dataset.totalPages);
-      if (currentPage < totalPages) {
-        fetchProducts(currentPage + 1);
-      }
-    });
-
-    function fetchProducts(page = 1) {
-      const name = document.getElementById('search-name').value;
-      const description = document.getElementById('search-description').value;
-      const minPrice = document.getElementById('min-price').value;
-      const maxPrice = document.getElementById('max-price').value;
-      const difficulty = document.getElementById('difficulty').value;
-
-      fetch(`/products/api/products/filter?name=${name}&description=${description}&minPrice=${minPrice}&maxPrice=${maxPrice}&difficulty=${difficulty}&page=${page}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(data => {
-          const productContainer = document.getElementById('product-container');
-          productContainer.innerHTML = '';
-          data.products.forEach(product => {
-            productContainer.innerHTML += `
-              <div class="col-lg-3 menu-item">
-                <a href="/assets/img/menu/${product.image}" class="glightbox"><img src="/assets/img/menu/${product.image}" class="menu-img img-fluid fixed-size" alt="${product.name}"></a>
-                <h4 style="color: red;">${product.name}</h4>
-                <p class="ingredients">${product.difficulty}</p>
-                <a class="btn btn-danger" href="/products/${product.id}"> $${product.price}</a>
-              </div>
-            `;
-          });
-
-          document.getElementById('page-info').innerText = `Page ${data.currentPage} of ${data.totalPages}`;
-          document.getElementById('page-info').dataset.page = data.currentPage;
-          document.getElementById('page-info').dataset.totalPages = data.totalPages;
-        })
-        .catch(error => console.error('Error fetching products:', error));
-    }
-
-    // Initial fetch
-    fetchProducts();
   </script>
 
 </body>

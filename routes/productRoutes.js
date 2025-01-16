@@ -11,5 +11,6 @@ router.post('/add', productController.addProduct);
 router.get('/search', productController.searchProducts);
 router.get('/', productController.getProductList);
 router.get('/:id', productController.getProductDetail);
+router.get('/api/products/filter', productController.getFilteredProductsJSON);
 
 module.exports = router;

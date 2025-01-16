@@ -29,3 +29,16 @@ CREATE TABLE public."users" (
     "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+DROP TABLE IF EXISTS public."orders";
+
+CREATE TABLE public."orders" (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    order_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES public."users"(id)
+);
+INSERT INTO public."orders" (user_id, product_id, quantity, price, location) VALUES
+(1, 1, 2, 20.00, 'New York'),
+(1, 2, 1, 20.00, 'New York'),

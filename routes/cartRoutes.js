@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Product } = require('../models'); // Adjust the path as necessary
+const cartController = require('../controllers/cartController'); // Adjust the path as necessary
 
 // Cart routes
 router.get('/', (req, res) => {
@@ -69,5 +70,7 @@ router.post('/remove/:id', (req, res) => {
 
   res.redirect('/cart');
 });
+
+router.get('/cartOrder', cartController.getOrders);
 
 module.exports = router;

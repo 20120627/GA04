@@ -64,6 +64,11 @@
         <a href="/users/login" class="text-button">Login</a>
         <span>|</span>
         <a href="/users/register" class="text-button">Register</a>
+        <% if (typeof user !== 'undefined') { %>
+          <a href="/users/info">
+            <img src="<%= user.avatar ? user.avatar : '/assets/img/apple-touch-icon.png' %>" alt="User Info" class="img-fluid animated fixed-size-avatar">
+          </a>
+        <% } %>
       </div>
 
     </div>
@@ -103,6 +108,38 @@
           </table>
           <h2>Total: $<span id="total-price"><%= totalPrice %></span></h2>
         <% } %>
+      </div>
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col-md-6 offset-md-3">
+            <div class="form-group">
+              <label for="location">Enter your location:</label>
+              <input type="text" class="form-control" id="location" placeholder="Enter your location">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Confirm Payment Button -->
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col-md-6 offset-md-3">
+            <form id="orderForm" action="/cart/cartOrder" method="POST">
+              <input type="hidden" name="location" id="orderLocation">
+              <input type="hidden" name="products" id="orderProducts">
+              <input type="hidden" name="totalPrice" id="orderTotalPrice">
+              <input type="hidden" name="orderTime" id="orderTime">
+              <button type="button" class="btn btn-primary btn-block" id="confirmPayment">Confirm to Process Payment</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col-md-6 offset-md-3">
+            <a href="cart/cartOrder" class="btn btn-secondary btn-block">Go to Cart Order</a>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -161,6 +198,28 @@
           }
         });
       });
+    });
+
+    document.getElementById('confirmPayment').addEventListener('click', function() {
+      const location = document.getElementById('location').value;
+      const products = [];
+      const rows = document.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        const productId = row.getAttribute('data-product-id');
+        const productName = row.querySelector('a').innerText;
+        const quantity = row.querySelector('.quantity-input').value;
+        const price = row.querySelector('.item-total').innerText.replace('$', '');
+        products.push({ productId, productName, quantity, price });
+      });
+      const totalPrice = document.getElementById('total-price').innerText;
+      const orderTime = new Date().toISOString();
+
+      document.getElementById('orderLocation').value = location;
+      document.getElementById('orderProducts').value = JSON.stringify(products);
+      document.getElementById('orderTotalPrice').value = totalPrice;
+      document.getElementById('orderTime').value = orderTime;
+
+      document.getElementById('orderForm').submit();
     });
   </script>
 

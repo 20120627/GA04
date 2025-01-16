@@ -83,6 +83,8 @@ exports.searchProducts = async (req, res) => {
     const { name, description, minPrice, maxPrice, difficulty } = req.query;
     const whereClause = {};
 
+    console.log('Search parameters:', { name, description, minPrice, maxPrice, difficulty });
+
     if (name) {
       whereClause.name = { [Op.iLike]: `%${name}%` };
     }
@@ -99,7 +101,12 @@ exports.searchProducts = async (req, res) => {
       whereClause.difficulty = difficulty;
     }
 
+    console.log('Where clause:', whereClause);
+
     const products = await Product.findAll({ where: whereClause });
+
+    console.log('Products found:', products);
+
     res.render('productList', { products });
   } catch (error) {
     console.error('Error searching products:', error);
@@ -123,10 +130,10 @@ exports.getFilteredProductsJSON = async (req, res) => {
     const whereClause = {};
 
     if (name) {
-      whereClause.name = { [Op.iLike]: `%{name}%` };
+      whereClause.name = { [Op.iLike]: `%${name}%` };
     }
     if (description) {
-      whereClause.description = { [Op.iLike]: `%{description}%` };
+      whereClause.description = { [Op.iLike]: `%${description}%` };
     }
     if (minPrice) {
       whereClause.price = { [Op.gte]: minPrice };
