@@ -27,6 +27,12 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Middleware to attach user to res.locals
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  next();
+});
+
 // Set up flash messages
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
@@ -69,7 +75,7 @@ passport.deserializeUser(async (id, done) => {
 
 // Routes
 app.use('/products', productRoutes);
-app.use('/cart', cartRoutes); // Ensure this line is present
+app.use('/cart', isAuthenticated, cartRoutes);
 app.use('/users', require('./routes/userRoutes'));
 
 app.get('/', (req, res) => {
